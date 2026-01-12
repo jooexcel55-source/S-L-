@@ -146,19 +146,20 @@ footer a{
 
 <!-- الصفحة الرئيسية -->
   <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
-    <img 
-        src="https://i.postimg.cc/sfZcCN9x/Whats-App-Image-2026-01-13-at-12-20-39-AM.jpg" 
-        alt="صورة" 
-        style="width:50%; height:50%; object-fit:contain; border-radius:10px;"
-    >
+
 </div>
 
 <div id="homePage" class="page active">
 <div style="text-align:center;margin-top:30px;">
   
 <h1 class="logo" style="font-size:28px;">S𝕌ℙ𝔼ℝ L𝔼𝔸𝔾𝕌𝔼</h1>
-<p>المصمم: YouSsef JoO</p>
+<p>المصمم: YouSsef JoO 55</p>
 <p>الهاتف: 01128915630</p>
+      <img 
+        src="https://i.postimg.cc/sfZcCN9x/Whats-App-Image-2026-01-13-at-12-20-39-AM.jpg" 
+        alt="صورة" 
+        style="width:50%; height:50%; object-fit:contain; border-radius:10px;"
+    >
 </div>
   </div>
 <!-- صفحة المنشورات -->
@@ -204,6 +205,20 @@ footer a{
 <div>YouSsef JoO ALhwarY</div>
 <div>01128915630</div>
 </footer>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: "https://super-league55-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+const app = initializeApp(firebaseConfig);
+window.db = getDatabase(app);
+window.ref = ref;
+window.set = set;
+window.onValue = onValue;
+</script>
 
 <script>
 // متغيرات
@@ -217,6 +232,14 @@ let posts = JSON.parse(localStorage.posts || "[]");
 let preds = JSON.parse(localStorage.preds || "[]");
 let chats = JSON.parse(localStorage.chats || "[]");
 let adminTab = "posts";
+onValue(ref(db), snap=>{
+  const data = snap.val() || {};
+  posts = data.posts || [];
+  preds = data.preds || [];
+  chats = data.chats || [];
+  renderPosts();
+  renderChat();
+});
 
 // التنقل بين الصفحات
 function showPage(id){
@@ -378,7 +401,11 @@ function renderAdminChat(q=""){let l=document.getElementById("adminList"); l.inn
 function delMsg(id){chats=chats.filter(c=>c.id!=id); save(); renderChat(); renderAdminChat();}
 
 // حفظ البيانات
-function save(){localStorage.posts=JSON.stringify(posts); localStorage.preds=JSON.stringify(preds); localStorage.chats=JSON.stringify(chats);}
+function save(){
+  set(ref(db,"posts"), posts);
+  set(ref(db,"preds"), preds);
+  set(ref(db,"chats"), chats);
+}
 
 // أول مرة عرض
 renderPosts();
